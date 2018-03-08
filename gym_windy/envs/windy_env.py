@@ -1,9 +1,6 @@
 import gym
 from gym import error, spaces, utils
-from gym.utils import seeding
 import numpy as np
-import sys
-import matplotlib.pyplot as plt
 
 UP = 0
 RIGHT = 1
@@ -29,6 +26,23 @@ def blow_wind():
 
 
 class WindyEnv(gym.Env):
+    """
+    A windy 3 rows by 4 columns grid world
+
+    cols   012
+    rows 0 SXE
+         1 OOO
+         2 OOO
+         3 OOO
+            ^
+
+    Agent starts at S and the task is to reach E avoiding X.
+    Column 1 is windy and pushes the agent towards X.
+    The wind strength is 0, 1 or 2 cells.
+    Rewards are -1 for all O cells and -5 for X cell.
+    Done is set when agent reaches X or E.
+    """
+
     metadata = {'render.modes': ['human']}
 
     def __init__(self):
@@ -46,7 +60,7 @@ class WindyEnv(gym.Env):
 
     def step(self, action):
         assert self.action_space.contains(action)
-        assert not self.done, "Already done. You should not do this. Call reset()"
+        assert not self.done, "Already done. You should not do this. Call reset(). "
 
         [row, col] = self.ind2coord(self.state)
 
@@ -60,7 +74,7 @@ class WindyEnv(gym.Env):
             col = max(col - 1, 0)
 
         if col == 1:                                        # col 1 is the windy column
-            row -= blow_wind()                         # adds a shift towards the hole
+            row -= blow_wind()                              # adds a shift towards the hole
 
         new_state = self.coord2ind([row, col])
 
@@ -110,8 +124,8 @@ class WindyEnv(gym.Env):
 
         [row, col] = coord
 
-        assert (row < self.n)
-        assert (col < self.n)
+        assert (row < self.rows)
+        assert (col < self.cols)
 
         return col * self.rows + row
 
