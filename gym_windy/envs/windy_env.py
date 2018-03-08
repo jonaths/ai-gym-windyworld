@@ -39,7 +39,7 @@ class WindyEnv(gym.Env):
     Agent starts at S and the task is to reach E avoiding X.
     Column 1 is windy and pushes the agent towards X.
     The wind strength is 0, 1 or 2 cells.
-    Rewards are -1 for all O cells and -5 for X cell.
+    Rewards are -1 for all O cells, 5 for E and -5 for X cell.
     Done is set when agent reaches X or E.
     """
 
@@ -84,7 +84,7 @@ class WindyEnv(gym.Env):
 
         if self.state == self.finish_state:
             self.done = True
-            return self.state, -1, self.done, None
+            return self.state, +5, self.done, None
 
         if self.state == self.hole_state:
             self.done = True
