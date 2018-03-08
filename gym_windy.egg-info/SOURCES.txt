@@ -1,0 +1,6 @@
+README.md
+gym_windy.egg-info/PKG-INFO
+gym_windy.egg-info/SOURCES.txt
+gym_windy.egg-info/dependency_links.txt
+gym_windy.egg-info/requires.txt
+gym_windy.egg-info/top_level.txt
