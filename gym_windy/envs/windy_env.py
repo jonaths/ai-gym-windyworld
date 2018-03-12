@@ -65,16 +65,18 @@ class WindyEnv(gym.Env):
         self.hole_state = 4                                 # top middle cell [0,1]
         self.finish_state = 8                               # top right corner [0,2]
         self.reset()
-        self.verbose = True                                 # show the grid world or not
         WindyEnv.num_env += 1
         self.this_fig_num = WindyEnv.num_env
-        if self.verbose:
-            self.grid = np.zeros((self.rows, self.cols))
-            self.grid[self.current_row, self.current_col] = 10
-            self.fig = plt.figure(self.this_fig_num)
-            plt.show(block=False)
-            plt.axis('off')
-            self._render()
+        self.verbose = False
+
+    def init_render(self):
+        self.grid = np.zeros((self.rows, self.cols))
+        self.grid[self.current_row, self.current_col] = 10
+        self.fig = plt.figure(self.this_fig_num)
+        plt.show(block=False)
+        plt.axis('off')
+        self.verbose = True  # show the grid world or not
+        self.render()
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -101,7 +103,6 @@ class WindyEnv(gym.Env):
         self.state = new_state                              # sets states and new coordinates
         self.current_row = row
         self.current_col = col
-        self._render()
 
         if self.state == self.finish_state:
             self.done = True
@@ -118,7 +119,7 @@ class WindyEnv(gym.Env):
         self.done = False
         return self.state
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         if not self.verbose:
             return
         img = np.zeros((self.rows, self.cols))              # restart matrix
