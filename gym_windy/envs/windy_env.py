@@ -1,11 +1,15 @@
 import gym
 from gym import error, spaces, utils
 import numpy as np
+from PIL import Image as Image
+import matplotlib.pyplot as plt
 
 UP = 0
 RIGHT = 1
 DOWN = 2
 LEFT = 3
+
+num_env = 0
 
 
 def blow_wind():
@@ -44,11 +48,15 @@ class WindyEnv(gym.Env):
     """
 
     metadata = {'render.modes': ['human']}
+    num_env = 0
 
     def __init__(self):
-        self.rows = 4
+
+        self.rows = 4                                       # number of cols and rows
         self.cols = 3
-        self.n =self.rows * self.cols
+        self.current_row = 0                                # current agent position
+        self.current_col = 0
+        self.n = self.rows * self.cols                       # total cells count
         self.observation_space = spaces.Discrete(self.n)    # 4 rows X 3 columns
         self.action_space = spaces.Discrete(4)              # up, right, down, left
         self.step_reward = -1
@@ -57,6 +65,16 @@ class WindyEnv(gym.Env):
         self.hole_state = 4                                 # top middle cell [0,1]
         self.finish_state = 8                               # top right corner [0,2]
         self.reset()
+        self.verbose = True                                 # show the grid world or not
+        WindyEnv.num_env += 1
+        self.this_fig_num = WindyEnv.num_env
+        if self.verbose:
+            self.grid = np.zeros((self.rows, self.cols))
+            self.grid[self.current_row, self.current_col] = 10
+            self.fig = plt.figure(self.this_fig_num)
+            plt.show(block=False)
+            plt.axis('off')
+            self._render()
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -64,7 +82,7 @@ class WindyEnv(gym.Env):
 
         [row, col] = self.ind2coord(self.state)
 
-        if action == UP:
+        if action == UP:                                    # validates edges
             row = max(row - 1, 0)
         elif action == DOWN:
             row = min(row + 1, self.rows - 1)
@@ -80,7 +98,10 @@ class WindyEnv(gym.Env):
 
         reward = self._get_reward(new_state=new_state)
 
-        self.state = new_state
+        self.state = new_state                              # sets states and new coordinates
+        self.current_row = row
+        self.current_col = col
+        self._render()
 
         if self.state == self.finish_state:
             self.done = True
@@ -97,8 +118,18 @@ class WindyEnv(gym.Env):
         self.done = False
         return self.state
 
-    def render(self, mode='human', close=False):
-        pass
+    def _render(self, mode='human', close=False):
+        if not self.verbose:
+            return
+        img = np.zeros((self.rows, self.cols))              # restart matrix
+        img[0, 1] = 0.5                                     # add hole
+        img[self.current_row, self.current_col] = 0.2       # set agent position
+        fig = plt.figure(self.this_fig_num)
+        plt.clf()
+        plt.imshow(img)
+        fig.canvas.draw()
+        plt.pause(0.00001)
+        return
 
     def ind2coord(self, index):
         """
