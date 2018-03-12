@@ -48,7 +48,7 @@ class WindyEnv(gym.Env):
     """
 
     metadata = {'render.modes': ['human']}
-    num_env = 0
+    num_env = 10
 
     def __init__(self):
 
@@ -64,10 +64,7 @@ class WindyEnv(gym.Env):
         self.start_state = 0                                # top left corner [0,0]
         self.hole_state = 4                                 # top middle cell [0,1]
         self.finish_state = 8                               # top right corner [0,2]
-        self.reset()
-        WindyEnv.num_env += 1
-        self.this_fig_num = WindyEnv.num_env
-        self.verbose = False
+        self.fig = None
 
     def init_render(self):
         self.grid = np.zeros((self.rows, self.cols))
@@ -76,7 +73,6 @@ class WindyEnv(gym.Env):
         plt.show(block=False)
         plt.axis('off')
         self.verbose = True  # show the grid world or not
-        self.render()
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -94,7 +90,8 @@ class WindyEnv(gym.Env):
             col = max(col - 1, 0)
 
         if col == 1:                                        # col 1 is the windy column
-            row -= blow_wind()                              # adds a shift towards the hole
+            shift = blow_wind()
+            row = max(row - shift, 0)                              # adds a shift towards the hole
 
         new_state = self.coord2ind([row, col])
 
@@ -116,16 +113,23 @@ class WindyEnv(gym.Env):
 
     def reset(self):
         self.state = self.start_state
+        coords = self.ind2coord(self.state)
+        self.current_row = coords[0]
+        self.current_col = coords[1]
         self.done = False
         return self.state
 
     def render(self, mode='human', close=False):
-        if not self.verbose:
-            return
+
+        if self.fig is None:
+            self.fig = plt.figure(15)
+            plt.show(block=False)
+            plt.axis('off')
+
         img = np.zeros((self.rows, self.cols))              # restart matrix
         img[0, 1] = 0.5                                     # add hole
         img[self.current_row, self.current_col] = 0.2       # set agent position
-        fig = plt.figure(self.this_fig_num)
+        fig = plt.figure(15)
         plt.clf()
         plt.imshow(img)
         fig.canvas.draw()
