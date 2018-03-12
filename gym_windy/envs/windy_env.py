@@ -65,6 +65,8 @@ class WindyEnv(gym.Env):
         self.hole_state = 4                                 # top middle cell [0,1]
         self.finish_state = 8                               # top right corner [0,2]
         self.fig = None
+        self.sequence = []
+        self.sum_reward = 0
 
     def init_render(self):
         self.grid = np.zeros((self.rows, self.cols))
@@ -101,35 +103,42 @@ class WindyEnv(gym.Env):
         self.current_row = row
         self.current_col = col
 
+        
+
         if self.state == self.finish_state:
             self.done = True
-            return self.state, +5, self.done, None
+            reward = +5
 
         if self.state == self.hole_state:
             self.done = True
-            return self.state, -5, self.done, None
+            reward = -5
+        
+        self.sequence.append(self.state)
+        self.sum_reward += reward
 
-        return self.state, reward, self.done, None
+        return self.state, reward, self.done, {'step_seq': self.sequence, 'sum_reward': self.sum_reward}
 
     def reset(self):
         self.state = self.start_state
         coords = self.ind2coord(self.state)
         self.current_row = coords[0]
         self.current_col = coords[1]
+        self.sequence = []
+        self.sum_reward = 0
         self.done = False
         return self.state
 
     def render(self, mode='human', close=False):
-
+        fig_num = 15                                        # just to prevent issues with other figures
         if self.fig is None:
-            self.fig = plt.figure(15)
+            self.fig = plt.figure(fig_num)
             plt.show(block=False)
             plt.axis('off')
 
         img = np.zeros((self.rows, self.cols))              # restart matrix
         img[0, 1] = 0.5                                     # add hole
         img[self.current_row, self.current_col] = 0.2       # set agent position
-        fig = plt.figure(15)
+        fig = plt.figure(fig_num)
         plt.clf()
         plt.imshow(img)
         fig.canvas.draw()

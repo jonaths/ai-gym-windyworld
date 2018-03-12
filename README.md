@@ -3,9 +3,9 @@
 A 3 rows by 4 modified version of Sutton's windy world implemented as an Ai Gym environment.
 
      cols   012			state_labels
-     rows 0 SXE			0  4  8
-          1 OOO			1  5  9
-          2 OOO			2  6  10
+     rows 0 SXE     0  4  8
+          1 OOO     1  5  9
+          2 OOO     2  6  10
           3 OOO     3  7  11
              ^
              |
