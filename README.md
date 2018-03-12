@@ -13,7 +13,7 @@ A 3 rows by 4 modified version of Sutton's windy world implemented as an Ai Gym 
  - Rewards are -1 for all O cells, 5 for E and -5 for X cell.
  - Done is set when agent reaches X or E.
 
-# Requisitos
+# Requirements
 
  - PyPlot, Gym and Numpy.
 
