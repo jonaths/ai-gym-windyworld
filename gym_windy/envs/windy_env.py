@@ -3,6 +3,7 @@ from gym import error, spaces, utils
 import numpy as np
 from PIL import Image as Image
 import matplotlib.pyplot as plt
+import random
 
 UP = 0
 RIGHT = 1
@@ -12,7 +13,7 @@ LEFT = 3
 num_env = 0
 
 
-def blow_wind():
+def uniform_blow_wind():
     """
     Generates a "wind" current in a range [0,2] with a
     given normal distribution
@@ -28,6 +29,21 @@ def blow_wind():
         shift = 2
     return shift
 
+def easy_blow_wind():
+    """
+    Generates a "wind" current in a range [0,2] with a
+    fixed distribution. The probability of blowing 2 
+    cells is 10% or less.  
+    :ret
+    """
+    s = random.random()
+    if s < 0.7:                                         # discretize distribution in 3 bins
+        shift = 0
+    elif 0.7 <= s < 0.9:
+        shift = 1
+    else:
+        shift = 2
+    return shift
 
 class WindyEnv(gym.Env):
     """
@@ -92,7 +108,7 @@ class WindyEnv(gym.Env):
             col = max(col - 1, 0)
 
         if col == 1:                                        # col 1 is the windy column
-            shift = blow_wind()
+            shift = easy_blow_wind()
             row = max(row - shift, 0)                              # adds a shift towards the hole
 
         new_state = self.coord2ind([row, col])
