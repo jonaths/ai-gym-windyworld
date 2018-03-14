@@ -1,8 +1,8 @@
 
 # General description
-A 3 rows by 4 modified version of Sutton's windy world implemented as an Ai Gym environment.
+A 3 rows by 4 modified version of Sutton's windy world implemented as an Ai Gym environment. Its purpose its to test learning strategies where there is a tradeoff between a policy which yields an expected large reward with high risk (route through row 0) or an expected smaller reward but with a lower risk (route through row 3). 
 
-     cols   012			state_labels
+     cols   012     state_labels
      rows 0 SXE     0  4  8
           1 OOO     1  5  9
           2 OOO     2  6  10
