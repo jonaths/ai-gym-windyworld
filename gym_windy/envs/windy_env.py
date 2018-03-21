@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image as Image
 import matplotlib.pyplot as plt
 import random
+import sys
 
 UP = 0
 RIGHT = 1
@@ -32,8 +33,8 @@ def uniform_blow_wind():
 def easy_blow_wind():
     """
     Generates a "wind" current in a range [0,2] with a
-    fixed distribution. The probability of blowing 2 
-    cells is 10% or less.  
+    fixed distribution. The probability of blowing 2
+    cells is 10% or less.
     :ret
     """
     s = random.random()
@@ -72,7 +73,7 @@ class WindyEnv(gym.Env):
         self.cols = 3
         self.current_row = 0                                # current agent position
         self.current_col = 0
-        self.n = self.rows * self.cols                       # total cells count
+        self.n = self.rows * self.cols                      # total cells count
         self.observation_space = spaces.Discrete(self.n)    # 4 rows X 3 columns
         self.action_space = spaces.Discrete(4)              # up, right, down, left
         self.step_reward = -1
@@ -82,6 +83,7 @@ class WindyEnv(gym.Env):
         self.finish_state = 8                               # top right corner [0,2]
         self.fig = None
         self.sequence = []
+        self.max_steps = 15                                 # maximum steps number before game ends
         self.sum_reward = 0
 
     def init_render(self):
@@ -96,6 +98,10 @@ class WindyEnv(gym.Env):
         assert self.action_space.contains(action)
         assert not self.done, "Already done. You should not do this. Call reset(). "
 
+        # s = random.random()
+        # if s > 0.90:                                      # chooses a random action with a small prob
+        #     action = random.randint(0, 3)
+
         [row, col] = self.ind2coord(self.state)
 
         if action == UP:                                    # validates edges
@@ -109,26 +115,22 @@ class WindyEnv(gym.Env):
 
         if col == 1:                                        # col 1 is the windy column
             shift = easy_blow_wind()
-            row = max(row - shift, 0)                              # adds a shift towards the hole
+            row = max(row - shift, 0)                       # adds a shift towards the hole
 
         new_state = self.coord2ind([row, col])
 
-        reward = self._get_reward(new_state=new_state)
+        reward = self._get_reward(state=new_state)
 
         self.state = new_state                              # sets states and new coordinates
         self.current_row = row
         self.current_col = col
 
-        if self.state == self.finish_state:
-            self.done = True
-            reward = +5
-
-        if self.state == self.hole_state:
-            self.done = True
-            reward = -5
-        
         self.sequence.append(self.state)
-        self.sum_reward += reward
+
+        if len(self.sequence) >= self.max_steps:
+            self.done = True                                # ends if max_steps is reached
+
+
 
         return self.state, reward, self.done, {'step_seq': self.sequence, 'sum_reward': self.sum_reward}
 
@@ -188,8 +190,18 @@ class WindyEnv(gym.Env):
 
         return col * self.rows + row
 
-    def _get_reward(self, new_state):
+    def _get_reward(self, state):
 
         reward = self.step_reward
+
+        if state == self.finish_state:
+            self.done = True
+            reward = +5
+
+        if state == self.hole_state:
+            self.done = True
+            reward = -5
+
+        self.sum_reward += reward
 
         return reward
