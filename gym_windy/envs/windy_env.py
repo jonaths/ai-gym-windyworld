@@ -132,7 +132,7 @@ class WindyEnv(gym.Env):
         if self.state == self.hole_state:
             self.done = True
             reward = -5
-        
+
         self.sequence.append(self.state)
 
         if len(self.sequence) >= self.max_steps:            
@@ -206,6 +206,6 @@ class WindyEnv(gym.Env):
         # it may win the lottery
         # if self.state == 1 and new_state == 5:
         #     s = random.random()
-        #     if s > 0.80:                                         
+        #     if s > 0.80:
         #         reward = 20
         return reward
