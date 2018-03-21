@@ -119,8 +119,6 @@ class WindyEnv(gym.Env):
         self.current_row = row
         self.current_col = col
 
-        
-
         if self.state == self.finish_state:
             self.done = True
             reward = +5
