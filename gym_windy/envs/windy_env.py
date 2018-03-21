@@ -83,7 +83,7 @@ class WindyEnv(gym.Env):
 
     def __init__(self):
 
-        self.rows = 4                                       # number of cols and rows
+        self.rows = 3                                       # number of cols and rows
         self.cols = 3
         self.current_row = 0                                # current agent position
         self.current_col = 0
@@ -93,8 +93,8 @@ class WindyEnv(gym.Env):
         self.step_reward = -1
         self.done = False
         self.start_state = 0                                # top left corner [0,0]
-        self.hole_state = 4                                 # top middle cell [0,1]
-        self.finish_state = 8                               # top right corner [0,2]
+        self.hole_state = 3                                 # top middle cell [0,1]
+        self.finish_state = 6                               # top right corner [0,2]
         self.fig = None
         self.sequence = []
         self.max_steps = 15                                 # maximum steps number before game ends
@@ -111,10 +111,6 @@ class WindyEnv(gym.Env):
     def step(self, action):
         assert self.action_space.contains(action)
         assert not self.done, "Already done. You should not do this. Call reset(). "
-
-        # s = random.random()
-        # if s > 0.90:                                      # chooses a random action with a small prob
-        #     action = random.randint(0, 3)
 
         [row, col] = self.ind2coord(self.state)
 
@@ -206,6 +202,10 @@ class WindyEnv(gym.Env):
 
     def _get_reward(self, state):
 
+        # print "finish_state:", self.finish_state
+        # print "hole_state:", self.hole_state
+        # print "state:", state
+
         reward = self.step_reward
 
         if state == self.finish_state:
@@ -214,7 +214,7 @@ class WindyEnv(gym.Env):
 
         if state == self.hole_state:
             self.done = True
-            reward += 3
+            reward -= 3
 
         self.sum_reward += reward
 

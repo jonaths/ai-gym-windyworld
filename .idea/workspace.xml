@@ -16,8 +16,8 @@
       <file leaf-file-name="windy_env.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/gym_windy/envs/windy_env.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="216" column="22" lean-forward="false" selection-start-line="216" selection-start-column="22" selection-end-line="216" selection-end-column="22" />
+            <state relative-caret-position="1341">
+              <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -453,8 +453,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gym_windy/envs/windy_env.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="216" column="22" lean-forward="false" selection-start-line="216" selection-start-column="22" selection-end-line="216" selection-end-column="22" />
+        <state relative-caret-position="1341">
+          <caret line="196" column="0" lean-forward="true" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
