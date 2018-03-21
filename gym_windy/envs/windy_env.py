@@ -46,6 +46,20 @@ def easy_blow_wind():
         shift = 2
     return shift
 
+def binary_blow_wind():
+    """
+    Generates a "wind" current in a range [0,2] with a
+    fixed distribution. The probability of blowing 2
+    cells is 10% or less.
+    :ret
+    """
+    s = random.random()
+    if s < 0.15:                                         # discretize distribution in 3 bins
+        shift = 1
+    else:
+        shift = 0
+    return shift
+
 class WindyEnv(gym.Env):
     """
     A windy 3 rows by 4 columns grid world
@@ -113,8 +127,8 @@ class WindyEnv(gym.Env):
         elif action == LEFT:
             col = max(col - 1, 0)
 
-        if col == 1:                                        # col 1 is the windy column
-            shift = easy_blow_wind()
+        if row == 1 and col == 1:                           # in 1,1 the wind blows
+            shift = binary_blow_wind()
             row = max(row - shift, 0)                       # adds a shift towards the hole
 
         new_state = self.coord2ind([row, col])
@@ -196,11 +210,11 @@ class WindyEnv(gym.Env):
 
         if state == self.finish_state:
             self.done = True
-            reward = +5
+            reward += 8
 
         if state == self.hole_state:
             self.done = True
-            reward = -5
+            reward += 3
 
         self.sum_reward += reward
 
