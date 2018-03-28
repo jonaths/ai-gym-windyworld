@@ -6,10 +6,8 @@ import matplotlib.pyplot as plt
 import random
 import sys
 
-UP = 0
+LEFT = 0
 RIGHT = 1
-DOWN = 2
-LEFT = 3
 
 num_env = 0
 
@@ -47,15 +45,16 @@ class WindyEnv(gym.Env):
 
     def __init__(self):
 
-        self.rows = 3  # number of cols and rows
-        self.cols = 4
+        self.rows = 1  # number of cols and rows
+        self.cols = 5
         self.start_state = 2
         self.hole_state = 1
-        self.finish_state = 0
+        self.finish_state_one = 0
+        self.finish_state_two = 4
         self.current_row, self.current_col = self.ind2coord(self.start_state)
         self.n = self.rows * self.cols  # total cells count
         self.observation_space = spaces.Discrete(self.n)  # 4 rows X 3 columns
-        self.action_space = spaces.Discrete(4)  # up, right, down, left
+        self.action_space = spaces.Discrete(2)  # left, right
         self.step_reward = -1
         self.done = False
 
@@ -63,7 +62,7 @@ class WindyEnv(gym.Env):
         self.sequence = []
         self.max_steps = 400  # maximum steps number before game ends
         self.sum_reward = 0
-        self.walls = [4, 7]
+        self.walls = []
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -75,11 +74,7 @@ class WindyEnv(gym.Env):
 
         [row, col] = self.ind2coord(self.state)
 
-        if action == UP:  # validates edges
-            row = max(row - 1, 0)
-        elif action == DOWN:
-            row = min(row + 1, self.rows - 1)
-        elif action == RIGHT:
+        if action == RIGHT:
             col = min(col + 1, self.cols - 1)
         elif action == LEFT:
             col = max(col - 1, 0)
@@ -125,8 +120,11 @@ class WindyEnv(gym.Env):
         img = np.zeros((self.rows, self.cols))
 
         # add exit
-        i, j = self.ind2coord(self.finish_state)
-        img[i, j] = 0.2
+        i, j = self.ind2coord(self.finish_state_one)
+        img[i, j] = 0.20
+
+        i, j = self.ind2coord(self.finish_state_two)
+        img[i, j] = 0.25
 
         # add hole
         i, j = self.ind2coord(self.hole_state)
@@ -188,9 +186,13 @@ class WindyEnv(gym.Env):
             reward -= 4
             self.done = True  # ends if max_steps is reached
 
-        if state == self.finish_state:
+        if state == self.finish_state_one:
             self.done = True
             reward += 12
+
+        if state == self.finish_state_two:
+            self.done = True
+            reward += 6
 
         self.sum_reward += reward
 
