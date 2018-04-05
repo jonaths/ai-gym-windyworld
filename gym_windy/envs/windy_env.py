@@ -19,7 +19,7 @@ def binary_blow_wind():
     :ret
     """
     s = random.random()
-    return s < 0.15
+    return s < 0.25
 
 
 class WindyEnv(gym.Env):
@@ -60,7 +60,7 @@ class WindyEnv(gym.Env):
 
         self.fig = None
         self.sequence = []
-        self.max_steps = 100  # maximum steps number before game ends
+        self.max_steps = 6  # maximum steps number before game ends
         self.sum_reward = 0
         self.walls = []
 
