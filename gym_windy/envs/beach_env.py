@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 import random
 import sys
 
-LEFT = 0
+UP = 0
 RIGHT = 1
+DOWN = 2
+LEFT = 3
 
 num_env = 0
 
@@ -22,7 +24,7 @@ def binary_blow_wind():
     return s < 0.05
 
 
-class WindyEnv(gym.Env):
+class BeachEnv(gym.Env):
     """
     A windy 3 rows by 4 columns grid world
 
@@ -45,37 +47,37 @@ class WindyEnv(gym.Env):
 
     def __init__(self):
 
-        self.rows = 1  # number of cols and rows
-        self.cols = 5
-        self.start_state = 2
-        self.hole_state = 1
-        self.finish_state_one = 0
-        self.finish_state_two = 4
+        self.rows = 8  # number of cols and rows
+        self.cols = 11
+        self.state = None
+        self.start_state = 49
+        self.hole_state = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 64, 65, 66, 67, 68, 69, 70]
+        self.finish_state_one = 46
         self.current_row, self.current_col = self.ind2coord(self.start_state)
         self.n = self.rows * self.cols  # total cells count
         self.observation_space = spaces.Discrete(self.n)  # 4 rows X 3 columns
-        self.action_space = spaces.Discrete(2)  # left, right
-        self.available_actions = [0, 1]
+        self.action_space = spaces.Discrete(4)  # left, right
+        self.available_actions = [0, 1, 2, 3]
         self.step_reward = -1
         self.done = False
 
         self.fig = None
         self.sequence = []
-        self.max_steps = 6  # maximum steps number before game ends
+        self.max_steps = 50  # maximum steps number before game ends
         self.sum_reward = 0
-        self.walls = []
+        self.walls = [16, 24, 32, 40, 48, 56, 15, 23, 31, 39, 47, 55, 63]
 
     def step(self, action):
         assert self.action_space.contains(action)
         assert not self.done, "Already done. You should not do this. Call reset(). "
 
-        # s = random.random()
-        # if s > 0.90:                                      # chooses a random action with a small prob
-        #     action = random.randint(0, 3)
-
         [row, col] = self.ind2coord(self.state)
 
-        if action == RIGHT:
+        if action == UP:                                    # validates edges
+            row = max(row - 1, 0)
+        elif action == DOWN:
+            row = min(row + 1, self.rows - 1)
+        elif action == RIGHT:
             col = min(col + 1, self.cols - 1)
         elif action == LEFT:
             col = max(col - 1, 0)
@@ -89,10 +91,13 @@ class WindyEnv(gym.Env):
 
         self.sequence.append(self.state)
 
+        reward = self._get_reward(state=new_state)
+
+        if new_state in self.hole_state:
+            self.done = True
+
         if len(self.sequence) >= self.max_steps:
             self.done = True  # ends if max_steps is reached
-
-        reward = self._get_reward(state=new_state)
 
         return self.state, reward, self.done, {
             'step_seq': self.sequence,
@@ -124,17 +129,15 @@ class WindyEnv(gym.Env):
         i, j = self.ind2coord(self.finish_state_one)
         img[i, j] = 0.20
 
-        i, j = self.ind2coord(self.finish_state_two)
-        img[i, j] = 0.25
-
         # add hole
-        # i, j = self.ind2coord(self.hole_state)
-        # img[i, j] = 0.8
+        for hole in self.hole_state:
+            i, j = self.ind2coord(hole)
+            img[i, j] = 0.4
 
         # add walls
         for s in self.walls:
             i, j = self.ind2coord(s)
-            img[i, j] = 0.4
+            img[i, j] = 0.8
 
         # set agent position
         img[self.current_row, self.current_col] = 0.6
@@ -177,23 +180,15 @@ class WindyEnv(gym.Env):
 
     def _get_reward(self, state):
 
-        # print "finish_state:", self.finish_state
-        # print "hole_state:", self.hole_state
-        # print "state:", state
-
         reward = self.step_reward
 
-        if state == self.hole_state and binary_blow_wind():
+        if state in self.hole_state:
             reward -= 4
             self.done = True  # ends if max_steps is reached
 
         elif state == self.finish_state_one:
             self.done = True
             reward += 12
-
-        elif state == self.finish_state_two:
-            self.done = True
-            reward += 6
 
         self.sum_reward += reward
 
