@@ -66,6 +66,7 @@ class BorderEnv(gym.Env):
         self.max_steps = 30  # maximum steps number before game ends
         self.sum_reward = 0
         self.walls = []
+        self.default_elevation = 5
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -101,7 +102,8 @@ class BorderEnv(gym.Env):
 
         return self.state, reward, self.done, {
             'step_seq': self.sequence,
-            'sum_reward': self.sum_reward}
+            'sum_reward': self.sum_reward,
+            'elevation': 0}
 
     def reset(self):
         self.state = self.start_state
@@ -183,12 +185,12 @@ class BorderEnv(gym.Env):
         reward = self.step_reward
 
         if state in self.hole_state:
-            reward -= 4
+            reward -= 10
             self.done = True  # ends if max_steps is reached
 
         elif state == self.finish_state_one:
             self.done = True
-            reward += 12
+            reward += 10
 
         self.sum_reward += reward
 

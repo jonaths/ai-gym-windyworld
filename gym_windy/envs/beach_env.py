@@ -48,11 +48,14 @@ class BeachEnv(gym.Env):
     def __init__(self):
 
         self.rows = 8  # number of cols and rows
-        self.cols = 11
+        self.cols = 8
         self.state = None
-        self.start_state = 49
-        self.hole_state = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 64, 65, 66, 67, 68, 69, 70]
-        self.finish_state_one = 46
+        self.start_state = 41
+        self.hole_state = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 54, 57, 58, 59, 60, 61, 62]
+        # usar este o la idea de la pendiente pero no los dos
+        # si se usa la pendiente verificar que get_reward no penalice las celdas shore
+        self.shore_state = [12, 13, 14, 17, 18, 19, 46, 49, 50, 51, 52, 53]
+        self.finish_state_one = 23
         self.current_row, self.current_col = self.ind2coord(self.start_state)
         self.n = self.rows * self.cols  # total cells count
         self.observation_space = spaces.Discrete(self.n)  # 4 rows X 3 columns
@@ -63,9 +66,14 @@ class BeachEnv(gym.Env):
 
         self.fig = None
         self.sequence = []
-        self.max_steps = 50  # maximum steps number before game ends
+        self.max_steps = 30  # maximum steps number before game ends
         self.sum_reward = 0
         self.walls = [16, 24, 32, 40, 48, 56, 15, 23, 31, 39, 47, 55, 63]
+        self.default_elevation = 5
+        self.elevation = {
+            17:2, 18:2, 19:2, 12:2, 13:2, 14:2, 46:2, 49:2, 50:2, 51:2, 52:2, 53:2,
+            0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 54:0, 57:0, 58:0, 59:0, 60:0, 61:0, 62:0
+            }
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -93,15 +101,13 @@ class BeachEnv(gym.Env):
 
         reward = self._get_reward(state=new_state)
 
-        if new_state in self.hole_state:
-            self.done = True
-
         if len(self.sequence) >= self.max_steps:
             self.done = True  # ends if max_steps is reached
 
         return self.state, reward, self.done, {
             'step_seq': self.sequence,
-            'sum_reward': self.sum_reward}
+            'sum_reward': self.sum_reward,
+            'elevation': self.get_elevation(new_state)}
 
     def reset(self):
         self.state = self.start_state
@@ -178,17 +184,27 @@ class BeachEnv(gym.Env):
 
         return col * self.rows + row
 
+    def get_elevation(self, state):
+        if state in self.elevation:
+            return self.elevation[state]
+        else:
+            return self.default_elevation
+
     def _get_reward(self, state):
 
         reward = self.step_reward
 
         if state in self.hole_state:
-            reward -= 4
+            reward -= 10
             self.done = True  # ends if max_steps is reached
+
+        # comentar si se usa la idea de pendiente
+        if state in self.shore_state:
+            reward = -5
 
         elif state == self.finish_state_one:
             self.done = True
-            reward += 12
+            reward += 10
 
         self.sum_reward += reward
 
