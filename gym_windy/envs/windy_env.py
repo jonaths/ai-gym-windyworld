@@ -61,7 +61,7 @@ class WindyEnv(gym.Env):
 
         self.fig = None
         self.sequence = []
-        self.max_steps = 6  # maximum steps number before game ends
+        self.max_steps = 4  # maximum steps number before game ends
         self.sum_reward = 0
         self.walls = []
 

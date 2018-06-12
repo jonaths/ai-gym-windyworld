@@ -55,7 +55,7 @@ class BeachEnv(gym.Env):
         # usar este o la idea de la pendiente pero no los dos
         # si se usa la pendiente verificar que get_reward no penalice las celdas shore
         self.shore_state = [12, 13, 14, 17, 18, 19, 46, 49, 50, 51, 52, 53]
-        self.finish_state_one = 23
+        self.finish_state_one = 22
         self.current_row, self.current_col = self.ind2coord(self.start_state)
         self.n = self.rows * self.cols  # total cells count
         self.observation_space = spaces.Discrete(self.n)  # 4 rows X 3 columns
@@ -66,7 +66,7 @@ class BeachEnv(gym.Env):
 
         self.fig = None
         self.sequence = []
-        self.max_steps = 30  # maximum steps number before game ends
+        self.max_steps = 10  # maximum steps number before game ends
         self.sum_reward = 0
         self.walls = [16, 24, 32, 40, 48, 56, 15, 23, 31, 39, 47, 55, 63]
         self.default_elevation = 5
@@ -199,12 +199,12 @@ class BeachEnv(gym.Env):
             self.done = True  # ends if max_steps is reached
 
         # comentar si se usa la idea de pendiente
-        if state in self.shore_state:
-            reward = -5
+        # if state in self.shore_state:
+        #     reward = -5
 
         elif state == self.finish_state_one:
             self.done = True
-            reward += 10
+            reward += 15
 
         self.sum_reward += reward
 
