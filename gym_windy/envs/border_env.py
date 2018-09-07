@@ -26,19 +26,18 @@ def binary_blow_wind():
 
 class BorderEnv(gym.Env):
     """
-    A windy 3 rows by 4 columns grid world
+    A 3 rows by 4 columns gridworld
+    - Start cell C
+    - Goal cell G
+    - Cliff cell X
 
-    cols   012
-    rows 0 SXE
-         1 OOO
-         2 OOO
-         3 OOO
-            ^
+    cols   0123456789 
+    rows 0 OOOOOOOOOO
+         1 OOOOOOOOOO
+         2 OOOOOOOOOO
+         3 SOOXXXXOOG
 
-    Agent starts at S and the task is to reach E avoiding X.
-    Column 1 is windy and pushes the agent towards X.
-    The wind strength is 0, 1 or 2 cells.
-    Rewards are -1 for all O cells, 5 for E and -5 for X cell.
+    Rewards are -1 for all O cells, 10 for G and -10 for X cell.
     Done is set when agent reaches X or E.
     """
 
