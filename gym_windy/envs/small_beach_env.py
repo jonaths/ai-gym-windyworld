@@ -24,7 +24,7 @@ def binary_blow_wind():
     return s < 0.05
 
 
-class BeachEnv(gym.Env):
+class SmallBeachEnv(gym.Env):
     """
     A windy 3 rows by 4 columns grid world
 
@@ -47,14 +47,14 @@ class BeachEnv(gym.Env):
 
     def __init__(self):
 
-        self.rows = 8  # number of cols and rows
+        self.rows = 6  # number of cols and rows
         self.cols = 8
         self.state = None
-        self.start_state = 41
-        self.hole_state = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 54, 57, 58, 59, 60, 61, 62]
+        self.start_state = 25
+        self.hole_state = [0, 1, 2, 3, 4, 5, 6, 7, 8, 40, 43, 44, 45, 46]
         # usar este o la idea de la pendiente pero no los dos
         # si se usa la pendiente verificar que get_reward no penalice las celdas shore
-        self.shore_state = [12, 13, 14, 17, 18, 19, 46, 49, 50, 51, 52, 53]
+        self.shore_state = [9, 10, 13, 14, 34, 37, 38, 39]
         self.finish_state_one = 22
         self.current_row, self.current_col = self.ind2coord(self.start_state)
         self.n = self.rows * self.cols  # total cells count
@@ -68,11 +68,11 @@ class BeachEnv(gym.Env):
         self.sequence = []
         self.max_steps = 10  # maximum steps number before game ends
         self.sum_reward = 0
-        self.walls = [16, 24, 32, 40, 48, 56, 15, 23, 31, 39, 47, 55, 63]
+        self.walls = [12, 18, 24, 30, 36, 42, 11, 17, 23, 29, 35, 41, 47]
         self.default_elevation = 5
         self.elevation = {
-            17:2, 18:2, 19:2, 12:2, 13:2, 14:2, 46:2, 49:2, 50:2, 51:2, 52:2, 53:2,
-            0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 54:0, 57:0, 58:0, 59:0, 60:0, 61:0, 62:0
+            0:0, 1:0 , 2:0 ,3:0 ,4:0 ,5:0 ,6:0 ,7:0 ,8:0 ,40:0 ,43:0 ,44:0 ,45:0 ,46:0 ,
+            9:2 ,10:2 ,34:2 ,37:2 ,38:2 ,39:2
             }
 
     def step(self, action):

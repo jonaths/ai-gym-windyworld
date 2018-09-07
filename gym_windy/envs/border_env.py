@@ -49,6 +49,7 @@ class BorderEnv(gym.Env):
 
         self.rows = 4  # number of cols and rows
         self.cols = 10
+        self.state_type = 'index'
         self.state = None
         self.start_state = 3
         self.hole_state = [15, 19, 23, 27]
@@ -67,6 +68,21 @@ class BorderEnv(gym.Env):
         self.sum_reward = 0
         self.walls = []
         self.default_elevation = 5
+
+    def set_state_type(self, state_type):
+        self.state_type = state_type
+
+    def get_state_to_return(self):
+        if(self.state_type == 'coord'):
+            # regresa las coordenadas como estado
+            state_to_return = self.ind2coord(self.state)
+        elif(self.state_type == 'onehot'):
+            # regresa una codificacion onehot
+            state_to_return = self.ind2onehot(self.state)
+        else:
+            # regresa un entero
+            state_to_return = self.state
+        return state_to_return
 
     def step(self, action):
         assert self.action_space.contains(action)
@@ -100,7 +116,9 @@ class BorderEnv(gym.Env):
         if len(self.sequence) >= self.max_steps:
             self.done = True  # ends if max_steps is reached
 
-        return self.state, reward, self.done, {
+        state_to_return = self.get_state_to_return()
+
+        return state_to_return, reward, self.done, {
             'step_seq': self.sequence,
             'sum_reward': self.sum_reward,
             'elevation': 0}
@@ -113,7 +131,8 @@ class BorderEnv(gym.Env):
         self.sequence = []
         self.sum_reward = 0
         self.done = False
-        return self.state
+        state_to_return = self.get_state_to_return()
+        return state_to_return
 
     def render(self, mode='human', close=False):
 
@@ -158,13 +177,19 @@ class BorderEnv(gym.Env):
         :return:
         """
 
-        assert (index >= 0)
+        # assert (index >= 0)
         # assert(index < self.n - 1)
 
         col = index // self.rows
         row = index % self.rows
 
         return [row, col]
+
+    def ind2onehot(self, index):
+        assert(index < self.rows * self.cols)
+        onehot = np.zeros(self.rows * self.cols)
+        onehot[index] = 1
+        return onehot
 
     def coord2ind(self, coord):
         """

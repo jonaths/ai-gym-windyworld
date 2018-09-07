@@ -20,3 +20,8 @@ register(
     entry_point='gym_windy.envs:BeachEnv',
 )
 
+register(
+    id='small-beach-v0',
+    entry_point='gym_windy.envs:SmallBeachEnv',
+)
+
